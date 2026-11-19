@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.pytest_cache/
+.streamlit/
+data/
+models/*
+!models/.gitkeep
+artifacts/mlflow/*
+!artifacts/mlflow/.gitkeep
+screenshots/*.png
+
+dataset/
