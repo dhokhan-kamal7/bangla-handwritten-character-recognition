@@ -1,140 +1,104 @@
-# Bangla Handwritten Word Recognition System
+# Bangla Handwritten Character Recognition
 
-**Student name:** MD. Dhokhan Kamal  
-**Student ID:** 1000129292
+## Project Overview
 
-A Streamlit prototype for recognizing a handwritten Bangla word by segmenting the drawing into character-like units, classifying each unit with a CNN, and concatenating the predictions into one output string.
+This project develops a deep learning-based system for recognizing handwritten Bangla characters using a Convolutional Neural Network (CNN). It includes a Streamlit interface where users can draw Bangla handwriting and receive model predictions.
 
-## Important dataset/approach note
+The project explores image preprocessing, model training, evaluation, experiment tracking, and interactive handwriting recognition.
 
-The official [BanglaLekha-Isolated v2 dataset](https://data.mendeley.com/datasets/hf6sf8zrkc/2) contains 166,105 **isolated character images** in 84 classes (50 basic characters, 10 numerals, and 24 selected compound characters). It is **not a word-image dataset**. Therefore this project trains a character classifier, not an end-to-end word recognizer.
+## Objectives
 
-The Streamlit page accepts a complete drawing and displays one combined Bangla output string. It uses vertical-projection segmentation followed by character classification. This provides a word-shaped output, but it cannot guarantee correct recognition of connected handwriting. The model does not learn word-level context or all Bangla vowel signs. Do not report word-level accuracy as if it were measured on a word-labelled test set.
-
-## Approach
-
-1. Load the numeric class folders (1–84) from BanglaLekha-Isolated.
-2. Convert each image to grayscale, resize to 64×64, and normalize to [0, 1].
-3. Train a three-block CNN with batch normalization, dropout, augmentation, and Adam.
-4. Run two experiments with different learning rates/dropout settings. MLflow logs parameters, validation metrics, and the saved model for each run.
-5. In the app, threshold the canvas image, segment it with a simple vertical-projection heuristic, classify each segment, and concatenate predicted labels into one Bangla string.
-
-`labels.json` maps the zero-based model output index to the corresponding Bangla character. Folder 1 maps to index 0, folder 2 to index 1, and so on.
-
-## Project structure
-
-```text
-bangla-ocr-assignment/
-├── train.py
-├── app.py
-├── requirements.txt
-├── Dockerfile
-├── README.md
-├── labels.json
-├── github_link.txt
-├── data/                 # dataset goes here; not submitted
-├── models/               # generated model; not submitted
-├── artifacts/mlflow/     # generated MLflow runs; not submitted
-└── screenshots/          # add the required screenshots after running
-```
-
-## Setup
-
-Python 3.10 is recommended.
-
-```bash
-python -m venv .venv
-# Windows:
-.venv\Scripts\activate
-# macOS/Linux:
-source .venv/bin/activate
-
-pip install -r requirements.txt
-```
+- Develop a CNN-based Bangla handwritten character classification model.
+- Preprocess handwritten character images for model training.
+- Train and evaluate the model using the BanglaLekha-Isolated dataset.
+- Track training experiments using MLflow.
+- Build an interactive handwriting interface using Streamlit.
+- Provide a reproducible project structure with Docker support.
 
 ## Dataset
 
-1. Download `BanglaLekha-Isolated.zip` from [Mendeley Data v2](https://data.mendeley.com/datasets/hf6sf8zrkc/2).
-2. Extract it so the 84 numeric class folders are below `data/`, commonly:
+The project uses the **BanglaLekha-Isolated** dataset.
 
-```text
-data/
-└── BanglaLekha-Isolated/
-    └── Images/
-        ├── 1/
-        ├── 2/
-        └── ...
-        └── 84/
-```
+- Approximately 166,105 handwritten character images.
+- 84 character classes.
+- Dataset source: [BanglaLekha-Isolated – Mendeley Data](https://data.mendeley.com/datasets/hf6sf8zrkc/2)
 
-The training script searches recursively for the numeric class folders.
+The dataset contains isolated characters rather than complete handwritten words.
 
-## Train and track experiments
+The dataset is not included in this repository. It must be downloaded separately and placed in the appropriate project directory.
 
-```bash
-python train.py
-```
+## Methodology
 
-Each invocation creates two MLflow runs:
-- `baseline_lr_1e-3`
-- `regularized_lr_3e-4`
+1. **Data Preparation:** Load handwritten character images from the dataset and prepare them for model training.
+2. **Preprocessing:** Resize images and normalize pixel values.
+3. **Model Development:** Build a CNN for handwritten Bangla character classification.
+4. **Model Training:** Train the CNN using TensorFlow and Keras with two hyperparameter configurations.
+5. **Experiment Tracking:** Record training parameters, metrics, and model artifacts using MLflow.
+6. **Application Development:** Use Streamlit to provide an interactive drawing interface and display predictions.
 
-For a quick smoke test, use a smaller subset (not suitable for final reported results):
+## Technologies Used
 
-```bash
-python train.py --max-per-class 100 --epochs 2 --batch-size 32
-```
+- Python
+- TensorFlow and Keras
+- Convolutional Neural Network (CNN)
+- Streamlit
+- MLflow
+- NumPy
+- Pillow
+- Docker
 
-Start MLflow:
+## Main Project Files
 
-```bash
-mlflow ui --backend-store-uri file:./artifacts/mlflow --host 0.0.0.0 --port 5000
-```
+| File | Description |
+|---|---|
+| `train.py` | Model training and MLflow experiment tracking |
+| `app.py` | Streamlit handwriting recognition interface |
+| `labels.json` | Character label mapping |
+| `requirements.txt` | Python dependencies |
+| `Dockerfile` | Docker configuration |
+| `README.md` | Project documentation |
+| `github_link.txt` | Public GitHub repository link |
 
-Open `http://localhost:5000`. Confirm there are at least two completed runs and capture the experiment page as `screenshots/mlflow_experiment.png`.
+## Running the Project
 
-## Run Streamlit locally
+Install the dependencies listed in `requirements.txt`.
 
-```bash
-streamlit run app.py
-```
+Download and extract the BanglaLekha-Isolated dataset into the expected dataset directory.
 
-Open `http://localhost:8501`, draw one word, and click **Recognize whole word**. Capture the result page as `screenshots/streamlit_app.png`.
+Train the model using the training script and the dataset image directory. The training process records experiments in MLflow and saves the trained model.
 
-## Docker
+Launch the MLflow interface to inspect the training experiments and their metrics.
 
-Build:
+Run the Streamlit application to draw handwritten Bangla input and view the model's prediction.
 
-```bash
-docker build -t bangla-ocr-app:0.1 .
-```
+## Key Features
 
-Run:
-
-```bash
-docker run --rm -p 8501:8501 bangla-ocr-app:0.1
-```
-
-Open `http://localhost:8501`. The trained model must exist at `models/model.keras` before running the container. Train locally first; generated model files are intentionally excluded from the source ZIP.
+- CNN-based handwritten Bangla character classification.
+- Interactive handwriting input through Streamlit.
+- Model training and evaluation.
+- MLflow experiment tracking.
+- Two recorded training configurations.
+- Docker support.
 
 ## Limitations
 
-- The source dataset has isolated characters, not handwritten words; no true word-level training or word-level benchmark is available from it.
-- The vertical-projection segmentation is heuristic and can fail when Bangla matra/headlines connect multiple letters.
-- The dataset's 84 classes do not represent every Bangla conjunct or all vowel signs/কার in their attached forms.
-- Concatenating character predictions does not use a language model or dictionary context.
-- Mouse/touch canvas strokes may differ from scanned handwriting.
-- A production-quality whole-word recognizer should be trained on labelled word/line images with a sequence architecture such as CNN–BiLSTM–CTC or a Transformer OCR model.
+- The training dataset contains isolated characters, not complete handwritten words.
+- The current application uses heuristic segmentation and character prediction to attempt whole-word recognition.
+- Whole-word predictions may be inaccurate or incomplete.
+- Recognition performance can vary depending on handwriting style, drawing quality, and character spacing.
+- Reliable end-to-end handwritten word recognition requires word-level training data and a suitable sequence recognition model.
 
-## Submission checklist
+## Future Improvements
 
-- [ ] Train both MLflow runs and verify them in the MLflow UI.
-- [ ] Save `screenshots/mlflow_experiment.png`.
-- [ ] Draw a word in Streamlit and save `screenshots/streamlit_app.png`.
-- [ ] Push this project to a **public** GitHub repository.
-- [ ] Replace the placeholder in `github_link.txt` with the public repository URL.
-- [ ] Keep the dataset, trained model, MLflow run store, virtual environment, and caches out of the source ZIP.
+- Improve character classification accuracy.
+- Use word-level Bangla handwriting datasets.
+- Explore sequence-based recognition architectures.
+- Improve character segmentation and word reconstruction.
+- Evaluate performance on more diverse handwriting samples.
 
-## Dataset citation
+## Author
 
-Biswas, M., Islam, R., Shom, G. K., Shopon, M., Mohammed, N., Momen, S., & Abedin, A. (2017). *BanglaLekha-Isolated: A multi-purpose comprehensive dataset of Handwritten Bangla Isolated characters*. Data in Brief, 12, 103–107. https://doi.org/10.1016/j.dib.2017.03.035
+**MD. Dhokhan Kamal**
+
+Student ID: **1000129292**
+
