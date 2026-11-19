@@ -1,1 +1,1 @@
-PASTE_YOUR_PUBLIC_GITHUB_REPOSITORY_URL_HERE
+https://github.com/dhokhan-kamal7/bangla-handwritten-character-recognition
